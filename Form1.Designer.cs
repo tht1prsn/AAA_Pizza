@@ -40,12 +40,41 @@ partial class Form1
         this.BackColor = Color.FromArgb(255, 180, 180, 180);
 
         OrderEntries = new List<OrderEntry>();
+        #region Checkout Screen
+        CheckOutScreen = new Panel()
+        {
+            Size = new Size((int)(FormSize.X), (int)(FormSize.Y * (6.0/7.0))),
+            Location = new Point(0, (int)(FormSize.Y * (1.0/7.0)))
+        };
+        CheckOutScreen.Visible=false;
+        this.Controls.Add(CheckOutScreen);
+        Panel BottomPanel = new()
+        {
+            Size=new Size((int)(FormSize.X), (int)(FormSize.Y * (1.0/7.0))),
+            Location = new Point(0, (int)(FormSize.Y * (5.0/7.0))),
+            BackColor=Color.FromArgb(255, 37, 35, 47)
+        };
+        CheckOutScreen.Controls.Add(BottomPanel);
+
+        
+        
+
+        StyledButton FinalCheckoutButton = new()
+        {
+            Text="Finish Checkout",
+            Size=new Size(200, 50),
+            Location=new Point(220, 600)
+        };
+        FinalCheckoutButton.Click+=FinalCheckoutButton_Click;
+        CheckOutScreen.Controls.Add(FinalCheckoutButton);
+
+        #endregion
 
         #region Pizza Designer
         this.pd = new()
         {
-            Size = new Size(500, 800),
-            Location = new Point((int)(FormSize.X / 2 - (500 / 2)), (int)(FormSize.Y / 2 * .25)),
+            Size = new Size((int)(FormSize.X), (int)(FormSize.Y)),
+            Location = new Point(0, 0),
             BackColor = Color.LightGray
         };
         this.Controls.Add(pd);
@@ -70,7 +99,7 @@ partial class Form1
 
 
 
-        FlowLayoutPanel DesignerMainPane = new()
+        DesignerMainPane = new()
         {
             Size = new Size(pd.Size.Width, (int)(pd.Size.Height * 17/24.0)),
             Location = new Point(0, (int)(pd.Size.Height / 6.0)),
@@ -102,8 +131,9 @@ partial class Form1
 
         DesignerGroupBoxPizza = new()
         {
-            Size = DesignerMainPane.Size,
+            Size = DesignerMainPane.Size,        
         };
+        //DesignerGroupBoxPizza.VerticalScroll.Visible=true;
         DesignerGroupBoxDrink = new()
         {
             Size = DesignerMainPane.Size,
@@ -131,18 +161,79 @@ partial class Form1
             catch(Exception) {}
         }
 
+        sizes = new()
+        {
+            Location = new Point(0, 10),
+            Size = new Size((int)(FormSize.X), 300)
+        };
 
+        sizes.Controls.Add(new Label() {Text="What size",Size=new Size(300, 40), Font = FontLarge});
+        sizes.Controls.Add(new Label() {Text="Small\n - 12.99", Size=new Size(200, 80), Font=FontSmall, Location = new Point(0, 60)});
+        sizes.Controls.Add(new Label() {Text="Medium\n - 15.99", Size=new Size(200, 80), Font=FontSmall, Location = new Point(200, 60)});
+        sizes.Controls.Add(new Label() {Text="Large\n - 18.99", Size=new Size(200, 80), Font=FontSmall, Location = new Point(400, 60)});
+
+        var irb = new ImageRadioButton("Resources\\PizzaIconSmall.png") {Location = new Point(0, 120), Size = new(150, 150)};
+        irb.Click+=PizzaOrderSelectionChange;
+        sizes.Controls.Add(irb);
+
+        irb = new ImageRadioButton("Resources\\PizzaIconMedium.png") {Location = new Point(200, 120), Size = new(150, 150)};
+        irb.Click+=PizzaOrderSelectionChange;
+        sizes.Controls.Add(irb);
         
-        DesignerGroupBoxPizza.Controls.Add(new Label() {Text="You want it stuffed? \n(only $2.00!!)", Size=new Size(300, 100), Font=FontSmall});
-        DesignerGroupBoxPizza.Controls.Add(new ToggleButton() {Text="Yes, Please!", Font=FontSmall, Size=new Size(180, 40), Location = new Point(300, 20)});
+        irb = new ImageRadioButton("Resources\\PizzaRadioIcon.png") {Location = new Point(400, 120), Size = new(150, 150)};
+        irb.Click+=PizzaOrderSelectionChange;
+        sizes.Controls.Add(irb);
+        DesignerGroupBoxPizza.Controls.Add(sizes);
 
+        crust = new()
+        {
+            Location = new Point(0, 10),
+            Size = new Size((int)(FormSize.X), 300)
+        };
+        crust.Visible=false;
 
-        DesignerGroupBoxPizza.Controls.Add(new Label() {Text="What about some toppings?($1.00 each)",Size = new Size(DesignerGroupBoxPizza.Size.Width, 40), Font=new Font(new FontFamily("Microsoft Sans Serif"), 18.4f), Location = new Point(0, 120)});
+        crust.Controls.Add(new Label() {Text="What type of crust?", Font=FontLarge, Size = new Size(200, 80)});
+        var tmp1 = new ToggleButton() {Text="Regular", Font=FontSmall, Location = new Point(0, 120), Size = new(150, 40)};
+        tmp1.Click+=PizzaOrderSelectionChange;
+        crust.Controls.Add(tmp1);
+        var tmp2 = new ToggleButton() {Text="Pan", Font=FontSmall, Location = new Point(150, 120), Size = new(150, 40)};
+        tmp2.Click+=PizzaOrderSelectionChange;
+        crust.Controls.Add(tmp2);
+        crust.Controls.Add(new Label() {Text="+1.99$", Font=FontSmall, Location = new Point(150, 180), Size = new(150, 40)});
+        var tmp3 = new ToggleButton() {Text="Stuffed", Font=FontSmall, Location = new Point(300, 120), Size = new(150, 40)};
+        tmp3.Click+=PizzaOrderSelectionChange;
+        crust.Controls.Add(tmp3);
+        crust.Controls.Add(new Label() {Text="+2.99$", Font=FontSmall, Location = new Point(300, 180), Size = new(150, 40)});
+        
+
+        DesignerGroupBoxPizza.Controls.Add(crust);
+
+        toppings = new()
+        {
+            Location = new Point(0, 10),
+            Size = new Size((int)(FormSize.X), 300)
+        };
+        toppings.Controls.Add(new Label() {Text="What about some toppings?($.99 each)",Size = new Size(DesignerGroupBoxPizza.Size.Width, 40), Font=new Font(new FontFamily("Microsoft Sans Serif"), 18.4f), Location = new Point(0, 0)});
         for(int i = 0; i < Toppings.Length; ++i)
         {
-            CheckBox tmpBox = new() {Text=Toppings[i],Font = new Font(new FontFamily("Microsoft Sans Serif"), 16.2f), Location = new Point(i/3*160, 160 + i%3 * 40), Size=new Size(160, 40)};
-            DesignerGroupBoxPizza.Controls.Add(tmpBox);
+            CheckBox tmpBox = new() {Text=Toppings[i],Font = new Font(new FontFamily("Microsoft Sans Serif"), 16.2f), Location = new Point(i/3*160, 40 + i%3 * 40), Size=new Size(160, 40)};
+            toppings.Controls.Add(tmpBox);
         }
+        toppings.Visible=false;
+        DesignerGroupBoxPizza.Controls.Add(toppings);
+
+
+
+
+
+        Button Back = new() {Text = "<=", Font=FontLarge, Size=new Size(100, 80)};
+        Back.Click+=PizzaDesignerArrowButtons_Click;
+        Label buffer = new() {Size=new Size(340, 0)};
+        Button Forward = new() {Text = "=>", Font=FontLarge, Size=new Size(100, 80)};
+        Forward.Click+=PizzaDesignerArrowButtons_Click;
+        DesignerGroupBoxPizza.Controls.Add(Back);
+        DesignerGroupBoxPizza.Controls.Add(buffer);
+        DesignerGroupBoxPizza.Controls.Add(Forward);
 
 
         Panel DesignerBottomPanel = new()
@@ -281,11 +372,14 @@ partial class Form1
         #endregion
 
     }
-
+    int curPizzaDesignerIndex = 0;
     FlowLayoutPanel OrderPanel;
     List<OrderEntry> OrderEntries;
     DoubleSquareRadioButton PizzaOrDrinkChoice;
-    GroupBox DesignerGroupBoxPizza;
+    FlowLayoutPanel DesignerGroupBoxPizza;
+    FlowLayoutPanel DesignerMainPane;
+
+    GroupBox sizes, crust, toppings;
     GroupBox DesignerGroupBoxDrink;
     Vector2 FormSize;
     Font FontSmall;
@@ -300,11 +394,12 @@ partial class Form1
     private Label AddButtonLabel;
     Button DesignerAddEntryButton;
     Panel MainFormLayoutPanel;
+    Panel CheckOutScreen;
     
     string[] Drinks = {"Sprite", "Dr. Pepper", "Coke", "Fanta"};
     string[] Toppings = {"Extra cheese", "Pepperoni", "Sasuage", "Pineapple", "Bacon", "Olives", "Peppers", "Mushrooms", "Spinach"};
 
-    double total, subtotal;
+    double total, subtotal = 0;
     const double tax = .08;
     const double deliveryFee = 11.99;
 
@@ -472,6 +567,26 @@ public class ImageButton : Button
     }
 }
 
+public class ImageRadioButton : RadioButton
+{
+    //Image image;
+    public ImageRadioButton(string path)
+    {
+        this.BackgroundImage = Image.FromFile(path);
+    }
+
+    protected override void OnPaint(PaintEventArgs pevent)
+    {
+        base.OnPaint(pevent);
+
+        if(Checked)
+            this.BackColor = Color.Tomato;
+        else    
+            this.BackColor = Color.LightGray;
+    }
+
+}
+
 public class DoubleSquareRadioButton : Control
 {   
     public Image L, R;
@@ -562,14 +677,44 @@ public class OrderEntry : Panel
         Size = new Size(600, 80);
         orderPrice = 0;
         if(order[0])
-            orderPrice+=12.99;
+        {
+
+            if(!order[1] && !order[2])
+            {
+                orderPrice+=12.99;
+            }
+            else if(order[1])
+            {
+                orderPrice+=15.99;
+            }
+            else if(order[2])
+            {
+                orderPrice+=18.99;
+            }
+            if(!order[3]&&!order[4])
+            {
+            }
+            else if(order[3])
+                orderPrice+=1.99;
+            else if(order[4])
+            {
+                orderPrice+=2.99;
+            }
+            for(int i = 5; i < order.Length; ++i)
+            {
+                if(order[i])
+                    orderPrice+=.99;
+            }
+        }
         else
             orderPrice+=1.99;
+
+        
         
         string tmp = "";
         for(int i = 1; i < order.Length; ++i)
         {
-            if(order[i] == true)
+            if(!order[0] && order[i])
             {
                 tmp = miscNames[i-1];
                 break;
@@ -581,10 +726,11 @@ public class OrderEntry : Panel
             Location = new Point(10, 10),
             Text = order[0] ? "Pizza" : tmp,
             TextAlign = ContentAlignment.MiddleLeft,
-            Size = new Size(200, 60),
+            Size = new Size(350, 60),
             Font = new Font(new FontFamily("Microsoft Sans Serif"), 22.2f),
             BackColor = Color.Transparent
         };
+        mainText.Text += (" - " + orderPrice);
         this.Controls.Add(mainText);
 
         trashButton = new("Resources\\Trash.png")
@@ -600,20 +746,20 @@ public class OrderEntry : Panel
             //show all attributes to pizza
             if(order[1])
             {
-                orderPrice+=2.00;
-                Label stuffed = new Label() {Text = "Stuffed", Location = new Point(100, 25), Size = new Size(100, 30), Font = new Font(new FontFamily("Microsoft Sans Serif"), 16.2f), TextAlign=ContentAlignment.MiddleCenter, BackColor = Color.Tomato};
-                this.Controls.Add(stuffed);
-                this.Controls[this.Controls.Count-1].BringToFront();
+                //orderPrice+=2.00;
+                //Label stuffed = new Label() {Text = "Stuffed", Location = new Point(100, 25), Size = new Size(100, 30), Font = new Font(new FontFamily("Microsoft Sans Serif"), 16.2f), TextAlign=ContentAlignment.MiddleCenter, BackColor = Color.Tomato};
+                //this.Controls.Add(stuffed);
+                //this.Controls[this.Controls.Count-1].BringToFront();
             }
             int index = 0;
-            for(int i = 2; i < order.Length; ++i)
-            {
-                if(order[i])
-                {
-                    orderPrice+=1.00;
-                    this.Controls.Add(new Label() {Text = miscNames[i-2], Location = new Point(230 + index/3 * 80, 10+index++%3*20), Size = new Size(80, 20), BackColor = Color.Transparent});
-                }
-            }
+            //for(int i = 1; i < order.Length; ++i)
+            //{
+            //    if(order[i])
+            //    {
+            //        orderPrice+=1.00;
+            //        this.Controls.Add(new Label() {Text = miscNames[i-2], Location = new Point(230 + index/3 * 80, 10+index++%3*20), Size = new Size(80, 20), BackColor = Color.Transparent});
+            //    }
+            //}
         }
 
 
@@ -635,10 +781,8 @@ public class OrderEntry : Panel
 
 }
 
-public class ToggleButton : Control
+public class ToggleButton : RadioButton
 {
-    public bool Checked;
-
     protected override void OnPaint(PaintEventArgs pevent)
     {
         base.OnPaint(pevent);
@@ -651,12 +795,8 @@ public class ToggleButton : Control
             TextRenderer.DrawText(pevent.Graphics, Text, Font, new Point(0, 0), ForeColor);
         }
     }
-
-    protected override void OnClick(EventArgs e)
-    {
-        Checked = !Checked;
-        this.Invalidate();
-    }
 }
+
+
 
 #endregion
